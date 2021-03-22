@@ -186,9 +186,7 @@ def discover():
 @app.route('/post')
 def post():
   return render_template("post.html")
-@app.route('/profile')
-def profile():
-  return render_template("profile.html")
+
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
