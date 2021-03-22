@@ -200,12 +200,27 @@ def add():
 # Route for handling the login page logic
 @app.route('/userlogin', methods=['GET', 'POST'])
 def userlogin():
+
+    users = g.conn.execute("SELECT User_ID FROM user_table")
+    User_IDs = []
+    for result in users:
+        User_IDs.append(result['user_id'])
+    users.close()
+
     error = None
     if request.method == 'POST':
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
+        if request.form['username'] not in User_IDs:
             error = 'Invalid Credentials. Please try again.'
         else:
-            return redirect(url_for('home'))
+            password = g.conn.execute('SELECT Password FROM user_table WHERE User_ID = (%s)' , request.form['username'])
+            mypass = []
+            for item in password:
+                mypass.append(item['password'])
+            if request.form['password'] != mypass[0]:
+                error = 'Invalid Credentials. Please try again.'
+            else:
+                return redirect(url_for('home'))
+            password.close()
     return render_template('login.html', error=error)
 
 @app.route('/login')
