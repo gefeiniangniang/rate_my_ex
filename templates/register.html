@@ -1,1 +1,70 @@
-this is register
+<html>
+  <style>
+    body{
+      font-size: 15pt;
+      font-family: arial;
+    }
+  </style>
+
+  <body>
+    <div class="container">
+      <h1>Register</h1>
+      <br>
+      <form action="" method="post">
+        <label><b>User Name</b>
+        </label>
+         <input type="text" placeholder="Username" name="username" value="{{request.form.username}}">
+         <br><br>
+         <label><b>Password</b>
+         </label>
+         <input type="password" placeholder="Password" name="password" value="{{request.form.password}}">
+         <br><br>
+         <label><b>City</b>
+         </label>
+         <input type="text" placeholder="City" name="city" value="{{request.form.city}}">
+         <br><br>
+         <label><b>Birthday</b>
+         </label>
+         <input type="text" placeholder="yyyy-mm-dd" name="birthday" value="{{request.form.birthday}}">
+         <br><br>
+         <label><b>Sex</b>
+         </label>
+         <select type="text" name="sex">
+           <option value="Male">Male</option>
+           <option value="Female">Female</option>
+           <option value="Transgender">Transgender</option>
+           <option value="Gender Neutral">Gender Neutral</option>
+           <option value="Others">Others</option>
+           <option value="Prefer not to answer">Prefer not to answer</option>
+         </select>
+         <br><br>
+         <label><b>Ethnicity</b>
+         </label>
+         <select type="text" name="ethnicity">
+           <option value="American Indian or Alaska Native">American Indian or Alaska Native</option>
+           <option value="Asian">Asian</option>
+           <option value="Black or African American">Black or African American</option>
+           <option value="Hispanic or Latino">Hispanic or Latino</option>
+           <option value="Native Hawaiian or Other Pacific Islander">Native Hawaiian or Other Pacific Islander</option>
+           <option value="White">'White'</option>
+           <option value="Others">Others</option>
+           <option value="Prefer not to answer">Prefer not to answer</option>
+         </select>
+         <br><br>
+         <label><b>Sexual Orientation</b>
+         </label>
+         <select type="text" name="sexual_orientation">
+           <option value="Heterosexual">Heterosexual</option>
+           <option value="Homosexual">Homosexual</option>
+           <option value="Bisexual">Bisexual</option>
+           <option value="Asexual">Asexual</option>
+           <option value="Others">Others</option>
+           <option value="Prefer not to answer">Prefer not to answer</option>
+         </select>
+         <br><br>
+        <input class="btn btn-default" type="submit" value="Let's go">
+      </form>
+    </div>
+  </body>
+
+</html>

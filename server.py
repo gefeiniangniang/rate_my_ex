@@ -106,6 +106,33 @@ def userlogin():
             password.close()
     return render_template('login.html', error=error)
 
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    global current_user
+    users = g.conn.execute("SELECT User_ID FROM user_table")
+    User_IDs = []
+    for result in users:
+        User_IDs.append(result['user_id'])
+    users.close()
+
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] in User_IDs:
+            error = 'Repeated User Id. Please try again.'
+        else:
+            username = request.form['username']
+            password = request.form['password']
+            city = request.form['city']
+            birthday = request.form['birthday']
+            sex = request.form['sex']
+            ethnicity = request.form['ethnicity']
+            sexual_orientation = request.form['sexual_orientation']
+            g.conn.execute('INSERT INTO user_table(User_ID,Password,City,Sex,Birthday,Ethnicity,Sexual_Orientation,Number_of_likes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', username, password,city,sex,birthday,ethnicity,sexual_orientation,0)
+            current_user = username
+            return redirect(url_for('.more'))
+    return render_template('register.html', error=error)
+
 #
 # @app.route is a decorator around index() that means:
 #   run index() whenever the user tries to access the "/" path using a GET request
@@ -220,6 +247,9 @@ def post():
     global current_user
     return render_template("post.html", user=current_user)
 
+@app.route('/more')
+def more():
+  return render_template("more.html")
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
@@ -282,6 +312,11 @@ def search():
     return render_template('discover.html', error=error)
 
 
+@app.route('/logout')
+def logout():
+    global current_user
+    current_user = None
+    return render_template("index.html")
 
 
 if __name__ == "__main__":
