@@ -1,13 +1,21 @@
-<p>UserID:</p>
-<p>Sex:</p>
-<p>Age:</p>
-<p>City:</p>
-<p>Ethnicity:</p>
-<p>Likes:</p>
+<p>UserID: {{ user_id }}</p>
+<p>Sex:{{ sex }}</p>
+<p>Age:{{ age }}</p>
+<p>City:{{ city }}</p>
+<p>Ethnicity:{{ ethnicity }}</p>
+<p>Sexual Orientation:{{ sexual_orientation }}</p>
+<p>Likes:{{ number_of_likes }}</p>
 <p></p>
-<p>Overall:</p>
-<p>Appearance:</p>
-<p>Personality:</p>
+{% if overall%}  
+    <p>Overall Score:{{ overall }}</p>
+{% endif %}
+{% if appearance%}  
+    <p>Appearance Score::{{ appearance }}</p>
+{% endif %}
+{% if personality%}  
+    <p>Personality Score::{{ personality }}</p>
+{% endif %}
+
 <br>
 <p>Reivews</p>
 <br>
