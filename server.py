@@ -228,7 +228,56 @@ def login():
     abort(401)
     this_is_never_executed()
 
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    users = g.conn.execute("SELECT User_ID FROM user_table")
+    User_IDs = []
+    for result in users:
+        User_IDs.append(result['user_id'])
+    users.close()
 
+    users = g.conn.execute("SELECT User_ID FROM registered_user")
+    registered = []
+    for result in users:
+        registered.append(result['user_id'])
+    users.close()
+
+    error = None
+    if request.method == 'POST':
+      if request.form['search'] not in User_IDs:
+        error = 'Invalid User ID. Please try again.'
+      else: 
+        userprofile = g.conn.execute("SELECT user_id,city,sex,ethnicity,sexual_orientation,number_of_likes,extract(year from age(now(),Birthday))as age FROM user_table where User_ID = (%s)",request.form['search'])
+        User_IDs = []
+        for result in userprofile:
+          User_IDs.append(result['user_id'])
+          User_IDs.append(result['city'])
+          User_IDs.append(result['sex'])
+          User_IDs.append(result['ethnicity'])
+          User_IDs.append(result['sexual_orientation'])
+          User_IDs.append(result['number_of_likes'])
+          User_IDs.append(result['age'])
+        userprofile.close()
+
+
+        if request.form['search'] not in registered:
+          return render_template('profile.html', user_id=User_IDs[0], city=User_IDs[1], sex=User_IDs[2],
+          ethnicity=User_IDs[3],sexual_orientation=User_IDs[4],number_of_likes=User_IDs[5], age=User_IDs[6])
+        else:
+          score = g.conn.execute("SELECT * FROM registered_user where User_ID = (%s)",request.form['search'])
+          for result in score:
+            User_IDs.append(result['average_overall_score'])
+            User_IDs.append(result['average_appearance_score'])
+            User_IDs.append(result['average_personality_score'])
+          score.close()
+          return render_template('profile.html', user_id=User_IDs[0], city=User_IDs[1], sex=User_IDs[2],
+          ethnicity=User_IDs[3],sexual_orientation=User_IDs[4],number_of_likes=User_IDs[5], age=User_IDs[6],
+          overall=User_IDs[7], appearance=User_IDs[8],personality=User_IDs[9])
+    return render_template('discover.html', error=error)
+
+    
+    
+    
 if __name__ == "__main__":
   import click
 
