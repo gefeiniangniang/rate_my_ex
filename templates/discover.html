@@ -1,1 +1,15 @@
-hello, I am another file!
+<p>Search</p>
+
+
+<div class="search">
+    <form action="/search" method=post>
+        <input type=text name=search value="{{ request.form.search}}"></br>
+        <div class="actions"><input type=submit value="Search"></div>
+    </form>
+    {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+    {% endif %}
+    {% if result %}
+        <p class="error"><strong>Result:</strong> <a href="profile">{{ result }}</a>
+    {% endif %}
+</div>
