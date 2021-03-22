@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Flask Intro - login page</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
   <body>
@@ -9,17 +9,13 @@
       <h1>Please login</h1>
       <br>
       <form action="" method="post">
-        <label><b>User Name
-        </b>
+        <label><b>User Name</b>
         </label>
-         <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}">
+         <input type="text" placeholder="Username" name="username" value="{{request.form.username }}">
          <br><br>
-         <label><b>Password
-         </b>
+         <label><b>Password</b>
          </label>
-         <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}">
+         <input type="password" placeholder="Password" name="password" value="{{request.form.password }}">
          <br><br>
         <input class="btn btn-default" type="submit" value="Login">
       </form>

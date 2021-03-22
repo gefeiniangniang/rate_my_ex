@@ -17,6 +17,7 @@ from flask import Flask, request, render_template, g, redirect, Response, url_fo
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
+current_user = None
 
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
@@ -74,6 +75,36 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
+@app.route('/')
+def index():
+      return render_template("index.html")
+
+# Route for handling the login page logic
+@app.route('/userlogin', methods=['GET', 'POST'])
+def userlogin():
+    global current_user
+    users = g.conn.execute("SELECT User_ID FROM user_table")
+    User_IDs = []
+    for result in users:
+        User_IDs.append(result['user_id'])
+    users.close()
+
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] not in User_IDs:
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            password = g.conn.execute('SELECT Password FROM user_table WHERE User_ID = (%s)' , request.form['username'])
+            mypass = []
+            for item in password:
+                mypass.append(item['password'])
+            if request.form['password'] != mypass[0]:
+                error = 'Invalid Credentials. Please try again.'
+            else:
+                current_user = request.form['username']
+                return redirect(url_for('.home'))
+            password.close()
+    return render_template('login.html', error=error)
 
 #
 # @app.route is a decorator around index() that means:
@@ -88,7 +119,7 @@ def teardown_request(exception):
 # see for routing: https://flask.palletsprojects.com/en/1.1.x/quickstart/#routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
-@app.route('/')
+@app.route('/home')
 def home():
   """
   request is a special object that Flask provides to access web request information:
@@ -183,9 +214,11 @@ def rate():
 @app.route('/discover')
 def discover():
   return render_template("discover.html")
+
 @app.route('/post')
 def post():
-  return render_template("post.html")
+    global current_user
+    return render_template("post.html", user=current_user)
 
 
 # Example of adding new data to the database
@@ -195,31 +228,6 @@ def add():
   g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
   return redirect('/')
 
-# Route for handling the login page logic
-@app.route('/userlogin', methods=['GET', 'POST'])
-def userlogin():
-
-    users = g.conn.execute("SELECT User_ID FROM user_table")
-    User_IDs = []
-    for result in users:
-        User_IDs.append(result['user_id'])
-    users.close()
-
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] not in User_IDs:
-            error = 'Invalid Credentials. Please try again.'
-        else:
-            password = g.conn.execute('SELECT Password FROM user_table WHERE User_ID = (%s)' , request.form['username'])
-            mypass = []
-            for item in password:
-                mypass.append(item['password'])
-            if request.form['password'] != mypass[0]:
-                error = 'Invalid Credentials. Please try again.'
-            else:
-                return redirect(url_for('home'))
-            password.close()
-    return render_template('login.html', error=error)
 
 @app.route('/login')
 def login():
@@ -244,7 +252,7 @@ def search():
     if request.method == 'POST':
       if request.form['search'] not in User_IDs:
         error = 'Invalid User ID. Please try again.'
-      else: 
+      else:
         userprofile = g.conn.execute("SELECT user_id,city,sex,ethnicity,sexual_orientation,number_of_likes,extract(year from age(now(),Birthday))as age FROM user_table where User_ID = (%s)",request.form['search'])
         User_IDs = []
         for result in userprofile:
@@ -273,9 +281,9 @@ def search():
           overall=User_IDs[7], appearance=User_IDs[8],personality=User_IDs[9])
     return render_template('discover.html', error=error)
 
-    
-    
-    
+
+
+
 if __name__ == "__main__":
   import click
 
