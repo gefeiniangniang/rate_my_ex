@@ -8,19 +8,24 @@
 
   <body>
     <div class="container">
-      <h1>Only registed user can use all the functions, do you want more?</h1>
+      <h1>Only registed user can use all the functions, wanna register?</h1>
+      <div>Current user: {{user}}</div>
       <p><a href="home">No thanks</a></p>
       <br>
       <form action="" method="post">
-        <label><b>User Name</b>
+        <label><b>Phone number</b>
         </label>
-         <input type="text" placeholder="Username" name="username" value="{{request.form.username}}">
+         <input type="text" placeholder="Phone number" name="phone_number" value="{{request.form.phone_number}}">
          <br><br>
-         <label><b>Password</b>
+         <label><b>Email</b>
          </label>
-         <input type="password" placeholder="Password" name="password" value="{{request.form.password}}">
+         <input type="text" placeholder="Email" name="email" value="{{request.form.email}}">
          <br><br>
-        <input class="btn btn-default" type="submit" value="Login">
+         <label><b>Real ID</b>
+         </label>
+         <input type="text" placeholder="Id" name="real_id" value="{{request.form.real_id}}">
+         <br><br>
+        <input class="btn btn-default" type="submit" value="Submit">
       </form>
       {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}

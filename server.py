@@ -129,9 +129,32 @@ def register():
             ethnicity = request.form['ethnicity']
             sexual_orientation = request.form['sexual_orientation']
             g.conn.execute('INSERT INTO user_table(User_ID,Password,City,Sex,Birthday,Ethnicity,Sexual_Orientation,Number_of_likes) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', username, password,city,sex,birthday,ethnicity,sexual_orientation,0)
-            current_user = username
+            current_user = request.form['username']
             return redirect(url_for('.more'))
     return render_template('register.html', error=error)
+
+
+@app.route('/more', methods=['GET', 'POST'])
+def more():
+    global current_user
+    registed_users = g.conn.execute("SELECT User_ID FROM registered_user")
+    Registed_User_IDs = []
+    for result in registed_users:
+        Registed_User_IDs.append(result['user_id'])
+    registed_users.close()
+
+    error = None
+    if request.method == 'POST':
+        if current_user in Registed_User_IDs:
+            error = 'This id have already registed. Please try again.'
+        else:
+            name = current_user
+            phone_number = request.form['phone_number']
+            email = request.form['email']
+            real_id = request.form['real_id']
+            g.conn.execute('INSERT INTO registered_user(User_ID,phone_number,email,real_id) VALUES (%s, %s, %s, %s)', name,phone_number,email,real_id)
+            return redirect(url_for('.home'))
+    return render_template("more.html",error=error,user=current_user)
 
 #
 # @app.route is a decorator around index() that means:
@@ -225,7 +248,7 @@ def home():
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("home.html", **context1, **context2,**context3,**context4)
+  return render_template("home.html", **context1, **context2,**context3,**context4,user=current_user)
 
 #
 # This is an example of a different path.  You can see it at:
@@ -247,9 +270,6 @@ def post():
     global current_user
     return render_template("post.html", user=current_user)
 
-@app.route('/more')
-def more():
-  return render_template("more.html")
 
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
@@ -282,7 +302,7 @@ def search():
     if request.method == 'POST':
       if request.form['search'] not in User_IDs:
         error = 'Invalid User ID. Please try again.'
-      else: 
+      else:
         userprofile = g.conn.execute("SELECT user_id,city,sex,ethnicity,sexual_orientation,number_of_likes,extract(year from age(now(),Birthday))as age FROM user_table where User_ID = (%s)",request.form['search'])
         User_IDs = []
         for result in userprofile:
@@ -319,7 +339,7 @@ def search():
           comments=g.conn.execute("SELECT x.post_id, u.user_id, x.comment_content, x.comment_time from (SELECT * FROM user_post p natural join com_to_post natural join comments c where p.user_id = (%s))x, user_comments u where x.comment_id=u.comment_id",request.form['search'])
           comment = comments.fetchall()
           comments.close()
-          
+
           return render_template('profile.html', user_id=User_IDs[0], city=User_IDs[1], sex=User_IDs[2],
           ethnicity=User_IDs[3],sexual_orientation=User_IDs[4],number_of_likes=User_IDs[5], age=User_IDs[6], data=data, post=post, comment=comment)
     return render_template('discover.html', error=error)
