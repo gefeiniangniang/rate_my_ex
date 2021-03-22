@@ -1,3 +1,4 @@
+<p><a href="home">Back to home</a></p>
 <p>UserID: {{ user_id }}</p>
 <p>Sex:{{ sex }}</p>
 <p>Age:{{ age }}</p>
@@ -6,20 +7,20 @@
 <p>Sexual Orientation:{{ sexual_orientation }}</p>
 <p>Likes:{{ number_of_likes }}</p>
 <p></p>
-{% if overall%}  
+{% if overall%}
     <p>Overall Score:{{ overall }}</p>
 {% endif %}
-{% if appearance%}  
+{% if appearance%}
     <p>Appearance Score::{{ appearance }}</p>
 {% endif %}
-{% if personality%}  
+{% if personality%}
     <p>Personality Score::{{ personality }}</p>
 {% endif %}
 
 <br>
-{% if data%} 
+{% if data%}
     <h2>Review</h2>
-    {% for row in data %}   
+    {% for row in data %}
         <p>From {{ row[0] }} Relationship from {{ row[1] }} to {{ row[2] }}</p>
         <p>Overall experience score: {{ row[3] }}, appearance_score: {{ row[4] }}, personality_score: {{ row[5] }}</p>
         <p>Review:{{ row[6] }}</p>
@@ -30,7 +31,7 @@
 
 <br>
 
-{% if post %} 
+{% if post %}
     <h2>Posts</h2>
     {% for row in post %}
         <p>Post:{{ row[1] }}</p>
@@ -65,4 +66,3 @@
 {% endif %}
 
 <br><br><br>
-
