@@ -282,7 +282,7 @@ def search():
     if request.method == 'POST':
       if request.form['search'] not in User_IDs:
         error = 'Invalid User ID. Please try again.'
-      else:
+      else: 
         userprofile = g.conn.execute("SELECT user_id,city,sex,ethnicity,sexual_orientation,number_of_likes,extract(year from age(now(),Birthday))as age FROM user_table where User_ID = (%s)",request.form['search'])
         User_IDs = []
         for result in userprofile:
@@ -306,10 +306,24 @@ def search():
             User_IDs.append(result['average_appearance_score'])
             User_IDs.append(result['average_personality_score'])
           score.close()
+
+          review = g.conn.execute("select x.reviewer, x.start, x.end, re.overall_experience_score, re.appearance_score, re.personality_score, re.review_content, re.review_time from ((select e.review_to_attend_1 as review_number, a.attend_user_2 as reviewer, r.start_time as start, r.end_time as end from eval_for e natural join relationship r natural join attend a where a.attend_user_1=(%s)) UNION ALL (select e1.review_to_attend_2 as review_number, a1.attend_user_1 as reviewer, r1.start_time as start, r1.end_time as end from eval_for e1 natural join relationship r1 natural join attend a1 where a1.attend_user_2=(%s))) x, review re where re.review_id=x.review_number order by x.start desc",request.form['search'],request.form['search'])
+          data = review.fetchall()
+          review.close()
+
+          posts=g.conn.execute("SELECT p.post_id, p.post_content, p.post_time FROM user_post u natural join posts p where u.User_ID = (%s)",request.form['search'])
+          post = posts.fetchall()
+          posts.close()
+
+
+          comments=g.conn.execute("SELECT x.post_id, u.user_id, x.comment_content, x.comment_time from (SELECT * FROM user_post p natural join com_to_post natural join comments c where p.user_id = (%s))x, user_comments u where x.comment_id=u.comment_id",request.form['search'])
+          comment = comments.fetchall()
+          comments.close()
+          
           return render_template('profile.html', user_id=User_IDs[0], city=User_IDs[1], sex=User_IDs[2],
-          ethnicity=User_IDs[3],sexual_orientation=User_IDs[4],number_of_likes=User_IDs[5], age=User_IDs[6],
-          overall=User_IDs[7], appearance=User_IDs[8],personality=User_IDs[9])
+          ethnicity=User_IDs[3],sexual_orientation=User_IDs[4],number_of_likes=User_IDs[5], age=User_IDs[6], data=data, post=post, comment=comment)
     return render_template('discover.html', error=error)
+
 
 
 @app.route('/logout')
