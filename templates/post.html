@@ -9,6 +9,20 @@
 <body>
   <h1>Post</h1>
   <div>Current user: {{user}}</div>
+  <p><a href="home">Back to home</a></p>
+
+  <p id="date"></p>
+  <script>
+  document.getElementById("date").innerHTML = Date();
+  </script>
+
+  <form action="" method="post">
+    <label><b>My Post</b>
+    </label>
+     <input type="text" placeholder="text" name="post" value="{{request.form.post}}">
+     <br><br>
+    <input class="btn btn-default" type="submit" value="Submit">
+  </form>
 
 </body>
 

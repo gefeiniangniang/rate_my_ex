@@ -13,6 +13,7 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, url_for
+import datetime
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -265,9 +266,21 @@ def rate():
 def discover():
   return render_template("discover.html")
 
-@app.route('/post')
+@app.route('/post', methods=['GET', 'POST'])
 def post():
     global current_user
+    count = g.conn.execute("SELECT COUNT(*) FROM posts")
+    data = []
+    for result in count:
+        data.append(result['count'])
+    count.close()
+    post_id = data[0]+1
+
+    if request.method == 'POST':
+        post = request.form['post']
+        g.conn.execute('INSERT INTO posts(Post_ID,Post_content,Post_time) VALUES (%s, %s, %s)', post_id,post,datetime.datetime.now())
+        g.conn.execute('INSERT INTO user_post(User_ID,Post_ID) VALUES (%s, %s)',current_user,post_id)
+        return redirect(url_for('.home'))
     return render_template("post.html", user=current_user)
 
 
