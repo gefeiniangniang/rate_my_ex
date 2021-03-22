@@ -195,21 +195,21 @@ def home():
   cursor1.close()
   context1 = dict(data1 = User_IDs)
 
-  cursor2 = g.conn.execute("SELECT user_table.User_ID FROM user_table natural join registered_user ORDER BY registered_user.average_overall_score desc LIMIT 5")
+  cursor2 = g.conn.execute("SELECT user_table.User_ID FROM user_table natural join registered_user WHERE average_overall_score <= 5 ORDER BY registered_user.average_overall_score desc LIMIT 5")
   User_IDs2 = []
   for result in cursor2:
     User_IDs2.append(result['user_id'])  # can also be accessed using result[0]
   cursor2.close()
   context2 = dict(data2 = User_IDs2)
 
-  cursor3 = g.conn.execute("SELECT user_table.User_ID FROM user_table natural join registered_user ORDER BY registered_user.average_appearance_score desc LIMIT 5")
+  cursor3 = g.conn.execute("SELECT user_table.User_ID FROM user_table natural join registered_user WHERE average_appearance_score <= 5 ORDER BY registered_user.average_appearance_score desc LIMIT 5")
   User_IDs3 = []
   for result in cursor3:
     User_IDs3.append(result['user_id'])  # can also be accessed using result[0]
   cursor3.close()
   context3 = dict(data3 = User_IDs3)
 
-  cursor4 = g.conn.execute("SELECT user_table.User_ID FROM user_table natural join registered_user ORDER BY registered_user.average_personality_score desc LIMIT 5")
+  cursor4 = g.conn.execute("SELECT user_table.User_ID FROM user_table natural join registered_user WHERE average_personality_score <= 5 ORDER BY registered_user.average_personality_score desc LIMIT 5")
   User_IDs4 = []
   for result in cursor4:
     User_IDs4.append(result['user_id'])  # can also be accessed using result[0]
