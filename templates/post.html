@@ -23,7 +23,9 @@
      <br><br>
     <input class="btn btn-default" type="submit" value="Submit">
   </form>
-
+  {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}
+  {% endif %}
 </body>
 
 

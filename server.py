@@ -119,8 +119,17 @@ def register():
 
     error = None
     if request.method == 'POST':
+
+        if (not request.form.get('username')) or (not request.form.get('password')) or (not request.form.get('birthday')):
+            error = 'Username and Password should not be empty. Please try again.'
+            return render_template('register.html', error=error)
+
         if request.form['username'] in User_IDs:
             error = 'Repeated User Id. Please try again.'
+            return render_template('register.html', error=error)
+
+        if len(request.form['username']) >20 or len(request.form['password']) >20 or len(request.form['city']) >30:
+            error = 'Invalid Input. Please try again.'
         else:
             username = request.form['username']
             password = request.form['password']
@@ -146,8 +155,17 @@ def more():
 
     error = None
     if request.method == 'POST':
+
+        if (not request.form.get('phone_number')) or (not request.form.get('email')) or (not request.form.get('real_id')):
+            error = 'Phone number and email and id should not be empty. Please try again.'
+            return render_template("more.html",error=error,user=current_user)
+
         if current_user in Registed_User_IDs:
             error = 'This id have already registed. Please try again.'
+            return render_template("more.html",error=error,user=current_user)
+
+        if len(request.form['phone_number']) >15 or len(request.form['email']) >30 or len(request.form['real_id']) >30:
+            error = 'Invalid Input. Please try again.'
         else:
             name = current_user
             phone_number = request.form['phone_number']
@@ -276,12 +294,16 @@ def post():
     count.close()
     post_id = data[0]+1
 
+    error = None
     if request.method == 'POST':
-        post = request.form['post']
-        g.conn.execute('INSERT INTO posts(Post_ID,Post_content,Post_time) VALUES (%s, %s, %s)', post_id,post,datetime.datetime.now())
-        g.conn.execute('INSERT INTO user_post(User_ID,Post_ID) VALUES (%s, %s)',current_user,post_id)
-        return redirect(url_for('.home'))
-    return render_template("post.html", user=current_user)
+        if len(request.form['post']) >= 500:
+            error = 'Post too long. Please try again.'
+        else:
+            post = request.form['post']
+            g.conn.execute('INSERT INTO posts(Post_ID,Post_content,Post_time) VALUES (%s, %s, %s)', post_id,post,datetime.datetime.now())
+            g.conn.execute('INSERT INTO user_post(User_ID,Post_ID) VALUES (%s, %s)',current_user,post_id)
+            return redirect(url_for('.home'))
+    return render_template("post.html", error=error,user=current_user)
 
 
 # Example of adding new data to the database
