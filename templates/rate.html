@@ -1,1 +1,36 @@
-hello, I am another file!
+<html>
+<body>
+<h2>Rate An Ex</h2>
+<form action="" method="POST">
+
+    <h3>Basic Information</h3>
+    <p>This is a relationship with:</p>
+    <input type="text" placeholder="UserID" name="reviewee" value="{{request.form.reviewee}}">
+    <br>
+    <p>Our relationship started from:</p>
+    <input type="date" name="start" value="{{request.form.start}}">
+    <br>
+    <p>And ended on:</p>
+    <input type="date" name="end" value="{{request.form.end}}">
+    <br>
+
+    <h3>Rate This Ex</h3>
+    <p>Overall experience score (0~5):</p>
+    <input type="number" step='0.1' placeholder='0.0' min="0" max="5" name="score1" value="{{request.form.score1}}">
+    <br>
+    <p>Appearance score (0~5):</p>
+    <input type="number" step='0.1' placeholder='0.0' min="0" max="5" name="score2" value="{{request.form.score2}}">
+    <br>
+    <p>Personality score (0~5):</p>
+    <input type="number" step='0.1' placeholder='0.0' min="0" max="5" name="score3" value="{{request.form.score3}}">
+    <br>
+    <p>My review:</p>
+    <input type="text" maxlength="500" placeholder="What I wanna say" name="review" value="{{request.form.review}}">
+    <br>
+    <input class="actions" type="submit" value="Submit">
+</form>
+{% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}
+{% endif %}
+</body>
+</html>
