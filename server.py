@@ -277,9 +277,74 @@ def home():
 # Notice that the function name is another() rather than index()
 # The functions for each app.route need to have different names
 #
-@app.route('/rate')
+
+@app.route('/rate', methods=['GET', 'POST'])
 def rate():
-  return render_template("rate.html")
+    error = None
+    global current_user
+    users = g.conn.execute("SELECT User_ID FROM registered_user")
+    User_IDs = []
+    for result in users:
+        User_IDs.append(result['user_id'])
+    users.close()
+    if current_user not in User_IDs:
+      error='User is not a registered user'
+      return render_template("more.html",error=error)
+    if request.method == 'POST':
+      
+
+      if request.form['reviewee'] not in User_IDs:
+        error = 'He/she is not a registered user.'
+        return render_template("rate.html", error=error)
+      if request.form['review']==null or request.form['review']=="":
+        error = 'Empty review.'
+        return render_template("rate.html", error=error)
+      if request.form['start']>request.form['end']:
+        error = 'Start date is later than end date.'
+        return render_template("rate.html", error=error)
+      
+      
+      reviewee = request.form['reviewee']
+      start = request.form['start']
+      end = request.form['end']
+      score1 = request.form['score1']
+      score2 = request.form['score2']
+      score3 = request.form['score3']
+      review = request.form['review']
+      time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+      
+    
+
+      count = g.conn.execute("SELECT COUNT(*) FROM relationship")
+      data = []
+      for result in count:
+        data.append(result['count'])
+      count.close()
+      relationship_number = data[0]+1
+
+      count = g.conn.execute("SELECT COUNT(*) FROM review")
+      data = []
+      for result in count:
+        data.append(result['count'])
+      count.close()
+      review_number = data[0]+1
+
+      if current_user>reviewee:
+        g.conn.execute('INSERT INTO review(review_id,overall_experience_score,appearance_score,Personality_score,Review_content,Review_time) VALUES (%s, %s, %s,%s, %s, %s)', review_number, score1, score2,score3,review,time)  
+        g.conn.execute('INSERT INTO relationship(relationship_id,start_time,end_time) VALUES (%s, %s, %s)', relationship_number, start, end)  
+        g.conn.execute('INSERT INTO attend(relationship_id,attend_user_1,attend_user_2) VALUES (%s, %s, %s)', relationship_number, current_user, reviewee)
+        g.conn.execute('INSERT INTO eval_for(relationship_id,review_to_attend_2) VALUES (%s, %s)', relationship_number, review_number)
+      else:
+        g.conn.execute('INSERT INTO review(review_id,Overall_experience_score,Appearance_score,Personality_score,Review_content,Review_time) VALUES (%s, %s, %s,%s, %s, %s)', review_number, score1, score2,score3,review,time)  
+        g.conn.execute('INSERT INTO relationship(relationship_id,start_time,end_time) VALUES (%s, %s, %s)', relationship_number, start, end)  
+        g.conn.execute('INSERT INTO attend(relationship_id,attend_user_1,attend_user_2) VALUES (%s, %s, %s)', relationship_number, reviewee, current_user)
+        g.conn.execute('INSERT INTO eval_for(relationship_id,review_to_attend_1) VALUES (%s, %s)', relationship_number, review_number)
+      return redirect(url_for('.home'))
+
+    return render_template("rate.html", error=error)
+
+
+
 @app.route('/discover')
 def discover():
   return render_template("discover.html")
@@ -300,7 +365,7 @@ def post():
             error = 'Post too long. Please try again.'
         else:
             post = request.form['post']
-            g.conn.execute('INSERT INTO posts(Post_ID,Post_content,Post_time) VALUES (%s, %s, %s)', post_id,post,datetime.datetime.now())
+            g.conn.execute('INSERT INTO posts(Post_ID,Post_content,Post_time) VALUES (%s, %s, %s)', post_id,post,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             g.conn.execute('INSERT INTO user_post(User_ID,Post_ID) VALUES (%s, %s)',current_user,post_id)
             return redirect(url_for('.home'))
     return render_template("post.html", error=error,user=current_user)
